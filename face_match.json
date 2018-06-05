@@ -1,0 +1,40 @@
+[
+  {
+    "SearchedFaceBoundingBox": {
+      "Width": 0.8994082808494568,
+      "Top": 0.1988888829946518,
+      "Left": 0.057692307978868484,
+      "Height": 0.6755555272102356
+    },
+    "SearchedFaceConfidence": 99.99908447265625,
+    "FaceMatches": [
+      {
+        "Face": {
+          "BoundingBox": {
+            "Width": 0.8994079828262329,
+            "Top": 0.19888900220394135,
+            "Left": 0.05769230052828789,
+            "Height": 0.6755560040473938
+          },
+          "FaceId": "5bdd5bff-d041-5b0c-a9c8-326e100a9c42",
+          "ExternalImageId": "kevin-epstein",
+          "Confidence": 99.99909973144531,
+          "ImageId": "e07fe267-ba0f-57fe-a58f-d478c39d445e"
+        },
+        "Similarity": 99.98084259033203
+      }
+    ],
+    "ResponseMetadata": {
+      "RetryAttempts": 0,
+      "HTTPStatusCode": 200,
+      "RequestId": "24d976be-7be8-11e7-9499-5b3298c52749",
+      "HTTPHeaders": {
+        "date": "Tue, 08 Aug 2017 03:17:44 GMT",
+        "x-amzn-requestid": "24d976be-7be8-11e7-9499-5b3298c52749",
+        "content-length": "524",
+        "content-type": "application/x-amz-json-1.1",
+        "connection": "keep-alive"
+      }
+    }
+  }
+]

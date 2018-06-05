@@ -1,0 +1,92 @@
+service: rekognitionBackend
+
+provider:
+  name: aws
+  runtime: python2.7
+
+# you can overwrite defaults here
+  stage: prod
+  region: us-east-1
+
+  iamRoleStatements:
+      - Effect: "Allow"
+        Action: ['kms:*']
+        # Change the ARN below to the appropriate ARN in your account
+        Resource: "arn:aws:kms:us-east-1:000000000000:key/c4a0491e-9437-4af0-bf27-e22cf9700000"
+      - Effect: "Allow"
+        Action: ['rekognition:*']
+        Resource:  "*"
+      - Effect: "Allow"
+        Action: ['s3:*']
+        Resource: "arn:aws:s3:::la-aws-rekognition-demo/*"
+      - Effect: "Allow"
+        Action: ['dynamodb:DescribeTable','dynamodb:GetItem','dynamodb:GetRecords','dynamodb:ListTables','dynamodb:PutItem','dynamodb:Query','dynamodb:Scan','dynamodb:UpdateItem']
+        # Change the ARN below to the appropriate ARN in your account
+        Resource: "arn:aws:dynamodb:us-east-1:000000000000:table/meetup_checkins"
+
+# you can define service wide environment variables here
+#  environment:
+#    variable1: value1
+
+# you can add packaging information here
+package:
+  include:
+    - index_faces.py
+#    - include-me-dir/**
+  exclude:
+    - node_modules/**
+    - virtualenvwrapper/**
+    - .idea/**
+
+functions:
+  RekognitionBackend:
+    handler: index_faces.handler
+    description: Rekognition Backend service
+    timeout: 300
+    events:
+      - schedule:
+          name: CollectionUpd
+          description: Runs the Rekognition Backend to collect user info and profile photos from Meetup API
+          rate: rate(1 hour)
+          enabled: true
+    environment:
+      # The key below has been altered and is unusable. You need to use KMS and encrypt your own Meetup.com API key
+      meetupApiKey: AQICAHjpNpYouBX5/8G7Y/kpXkdAfQ3AExuaQcnRjx9a/9NpBaG5a+/mz94eyk7F3oo7LJ5cAAAAfAB8AAAqhkig9w0BBwagbTBrAgEAMGYGCSqGSIb3DQEHATAeBglghkgBZQMEAS4wEQQM+yXaszew77LaEkxpAgEQgDl7dsqq++4qn7t1LJfP2Q9W5bzrv9GiVjKy/b1voCSM7YXpf8SdTBqY3pxFsmoOMh/Uvct3hlWSLfg=
+
+  searchfaces:
+    handler: search_faces.handler
+    description: Backend service for doing search by face matching
+    timeout: 30
+    events:
+      - http: GET searchfaces
+    environment:
+      # The key below has been altered and is unusable. You need to use KMS and encrypt your own Meetup.com API key
+      meetupApiKey: AQICAHjpNpYouBX5/8G7Y/kpXkdAfQ3AExuaQcnRjx9a/9NpBaG5a+/mz94eyk7F3oo7LJ5cAAAAfAB8AAAqhkig9w0BBwagbTBrAgEAMGYGCSqGSIb3DQEHATAeBglghkgBZQMEAS4wEQQM+yXaszew77LaEkxpAgEQgDl7dsqq++4qn7t1LJfP2Q9W5bzrv9GiVjKy/b1voCSM7YXpf8SdTBqY3pxFsmoOMh/Uvct3hlWSLfg=
+
+  getmembername:
+    handler: get_member_name.handler
+    description: A micro service that takes a member id and returns the members given name
+    timeout: 5
+    events:
+      - http: GET membername
+
+  checkuserin:
+    handler: check_member_in.handler
+    description: A microservice that checks in a user to the meetup
+    timeout: 5
+    events:
+      - http: GET checkin
+
+# you can add CloudFormation resource templates here
+#resources:
+#  Resources:
+#    NewResource:
+#      Type: AWS::S3::Bucket
+#      Properties:
+#        BucketName: my-new-bucket
+#  Outputs:
+#     NewOutput:
+#       Description: "Description for the output"
+#       Value: "Some output value"
+plugins:
+  - serverless-python-requirements
